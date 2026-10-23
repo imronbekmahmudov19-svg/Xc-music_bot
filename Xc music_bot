@@ -1,0 +1,39 @@
+import telebot
+
+TOKEN = "8920653591:AAHIqnNsiyT5u-kGGDIzJQ5rPP3Ke8eTG9c"
+bot = telebot.TeleBot(TOKEN)
+
+
+@bot.message_handler(commands=["start"])
+def send_welcome(message):
+    bot.reply_to(
+        message,
+        "Salom! Menga qo'shiq yoki ijrochi nomini yozib yuboring, "
+        "men uni YouTube'dan topib beraman!",
+    )
+
+
+@bot.message_handler(func=lambda message: True)
+def search_song(message):
+    song_name = message.text
+    # YouTube qidiruv havolasini tayyorlaymiz
+    youtube_link = (
+        f"https://www.youtube.com/results?search_query={song_name.replace(' ', '+')}"
+    )
+
+    markup = telebot.types.InlineKeyboardMarkup()
+    btn = telebot.types.InlineKeyboardButton(
+        "🎧 Qo'shiqni ochish / Tinglash", url=youtube_link
+    )
+    markup.add(btn)
+
+    bot.send_message(
+        message.chat.id,
+        f"🔍 *{song_name}* bo'yicha qidiruv natijasi:",
+        reply_markup=markup,
+        parse_mode="Markdown",
+    )
+
+
+print("Bot yangilandi va ishlayapti...")
+bot.polling()
